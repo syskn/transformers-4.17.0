@@ -32,7 +32,7 @@ from transformers.modeling_outputs import (
 from transformers.modeling_utils import PreTrainedModel
 from transformers.utils import logging
 from transformers.utils.model_parallel_utils import assert_device_map, get_device_map
-from configuration_gpt_neox import GPTNeoXConfig
+from .configuration_gpt_neox import GPTNeoXConfig
 
 
 logger = logging.get_logger(__name__)
