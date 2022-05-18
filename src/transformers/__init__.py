@@ -1049,12 +1049,12 @@ if is_torch_available():
     )
     _import_structure["models.gpt_neox"].extend(
         [
-            "GPT_NEOX_PRETRAINED_MODEL_ARCHIVE_LIST",
+            "GPTNeoX_PRETRAINED_MODEL_ARCHIVE_LIST",
             "GPTNeoXForCausalLM",
+            "GPTNeoXForQuestionAnswering",
             "GPTNeoXForSequenceClassification",
             "GPTNeoXModel",
             "GPTNeoXPreTrainedModel",
-            "load_tf_weights_in_gpt_neo",
         ]
     )
     _import_structure["models.hubert"].extend(
@@ -2298,6 +2298,7 @@ if is_flax_available():
         ["FlaxGPTNeoForCausalLM", "FlaxGPTNeoModel", "FlaxGPTNeoPreTrainedModel"]
     )
     _import_structure["models.gptj"].extend(["FlaxGPTJForCausalLM", "FlaxGPTJModel", "FlaxGPTJPreTrainedModel"])
+    _import_structure["models.gpt_neox"].extend(["FlaxGPTNeoXForCausalLM", "FlaxGPTNeoXModel", "FlaxGPTNeoXPreTrainedModel"])
     _import_structure["models.marian"].extend(
         [
             "FlaxMarianModel",
@@ -3221,12 +3222,12 @@ if TYPE_CHECKING:
             GPTJPreTrainedModel,
         )
         from .models.gpt_neox import (
-            GPT_NEOX_PRETRAINED_MODEL_ARCHIVE_LIST,
+            GPTNEOX_PRETRAINED_MODEL_ARCHIVE_LIST,
             GPTNeoXForCausalLM,
+            GPTNeoXForQuestionAnswering,
             GPTNeoXForSequenceClassification,
             GPTNeoXModel,
             GPTNeoXPreTrainedModel,
-            load_tf_weights_in_gpt_neox,
         )
         from .models.hubert import (
             HUBERT_PRETRAINED_MODEL_ARCHIVE_LIST,
@@ -4248,6 +4249,7 @@ if TYPE_CHECKING:
         from .models.gpt2 import FlaxGPT2LMHeadModel, FlaxGPT2Model, FlaxGPT2PreTrainedModel
         from .models.gpt_neo import FlaxGPTNeoForCausalLM, FlaxGPTNeoModel, FlaxGPTNeoPreTrainedModel
         from .models.gptj import FlaxGPTJForCausalLM, FlaxGPTJModel, FlaxGPTJPreTrainedModel
+        from .models.gpt_neox import FlaxGPTNeoXForCausalLM, FlaxGPTNeoXModel, FlaxGPTNeoXPreTrainedModel
         from .models.marian import FlaxMarianModel, FlaxMarianMTModel, FlaxMarianPreTrainedModel
         from .models.mbart import (
             FlaxMBartForConditionalGeneration,
