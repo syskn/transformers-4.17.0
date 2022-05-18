@@ -15,7 +15,7 @@
 
 import inspect
 import math
-from typing import Callable, Iterable, List, Optional
+from typing import Callable, Iterable, List, Tuple, Optional
 
 import numpy as np
 import torch
