@@ -44,8 +44,8 @@ def fixed_pos_embedding(x, seq_dim=1, seq_len=None):
         seq_len = x.shape[seq_dim]
     inv_freq = 1.0 / (10000 ** (torch.arange(0, dim, 2) / dim))
     # sinusoid_inp = torch.einsum("i , j -> i j", torch.arange(seq_len), inv_freq).to(x.device).float()
-    sinusoid_inp = torch.einsum("i , j -> i j", torch.arange(seq_len), inv_freq).float()
-    sinusoid_inp = torch.cat((sinusoid_inp, sinusoid_inp), dim=-1).to(x.device)
+    sinusoid_inp = torch.einsum("i , j -> i j", torch.arange(seq_len), inv_freq).to(x.device).float()
+    sinusoid_inp = torch.cat((sinusoid_inp, sinusoid_inp), dim=-1)
     return torch.sin(sinusoid_inp), torch.cos(sinusoid_inp)
 
 
@@ -202,8 +202,8 @@ class GPTNeoXAttention(nn.Module):
             query = torch.cat([q_rot, q_pass], dim=-1)
         else:
             sincos = fixed_pos_embedding(key, 1, seq_len=seq_len)
-            #key = apply_rotary_pos_emb(key, sincos, offset=offset)
-            #query = apply_rotary_pos_emb(query, sincos, offset=offset)
+            key = apply_rotary_pos_emb(key, sincos, offset=offset)
+            query = apply_rotary_pos_emb(query, sincos, offset=offset)
 
         key = key.permute(0, 2, 1, 3)
         query = query.permute(0, 2, 1, 3)
