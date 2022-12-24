@@ -45,7 +45,7 @@ def fixed_pos_embedding(x, seq_dim=1, seq_len=None):
     inv_freq = 1.0 / (10000 ** (torch.arange(0, dim, 2) / dim))
     # sinusoid_inp = torch.einsum("i , j -> i j", torch.arange(seq_len), inv_freq).to(x.device).float()
     sinusoid_inp = torch.einsum("i , j -> i j", torch.arange(seq_len), inv_freq).float()
-    sinusoid_inp = torch.cat((sinusoid_inp, sinusoid_inp), dim=-1).to(x.device)
+    sinusoid_inp = torch.cat((sinusoid_inp, sinusoid_inp), dim=-1)
     return torch.sin(sinusoid_inp), torch.cos(sinusoid_inp)
 
 
