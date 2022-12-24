@@ -43,34 +43,21 @@ def fixed_pos_embedding(x, seq_dim=1, seq_len=None):
     if seq_len is None:
         seq_len = x.shape[seq_dim]
     inv_freq = 1.0 / (10000 ** (torch.arange(0, dim, 2) / dim))
-    sinusoid_inp = (
-        torch.einsum("i , j -> i j", torch.arange(seq_len, dtype=torch.float), inv_freq).to(x.device).float()
-    )
+    # sinusoid_inp = torch.einsum("i , j -> i j", torch.arange(seq_len), inv_freq).to(x.device).float()
+    sinusoid_inp = torch.einsum("i , j -> i j", torch.arange(seq_len), inv_freq).float()
+    sinusoid_inp = torch.cat((sinusoid_inp, sinusoid_inp), dim=-1).to(x.device)
     return torch.sin(sinusoid_inp), torch.cos(sinusoid_inp)
 
 
-def rotate_every_two(x):
-    x1 = x[:, :, :, ::2]
-    x2 = x[:, :, :, 1::2]
-    x = torch.stack((-x2, x1), dim=-1)
-    return x.flatten(-2)  # in einsum notation: rearrange(x, '... d j -> ... (d j)')
-
-
-def duplicate_interleave(m):
-    """
-    A simple version of `torch.repeat_interleave` for duplicating a matrix while interleaving the copy.
-    """
-    dim0 = m.shape[0]
-    m = m.view(-1, 1)  # flatten the matrix
-    m = m.repeat(1, 2)  # repeat all elements into the 2nd dimension
-    m = m.view(dim0, -1)  # reshape into a matrix, interleaving the copy
-    return m
+def rotate_half(x):
+    x1, x2 = x[..., :x.shape[-1] // 2], x[..., x.shape[-1] // 2:]
+    return torch.cat((-x2, x1), dim=x1.ndim - 1) # dim=-1 triggers a bug in earlier torch versions
 
 
 def apply_rotary_pos_emb(x, sincos, offset=0):
-    sin, cos = map(lambda t: duplicate_interleave(t)[None, offset : x.shape[1] + offset, None, :], sincos)
-    # einsum notation for lambda t: repeat(t[offset:x.shape[1]+offset,:], "n d -> () n () (d j)", j=2)
-    return (x * cos) + (rotate_every_two(x) * sin)
+    sin, cos = sincos
+    cos, sin = cos[None, offset:x.shape[1]+offset, None, :], sin[None, offset:x.shape[1]+offset, None, :]
+    return (x * cos) + (rotate_half(x) * sin)
 
 
 class GPTNeoXAttention(nn.Module):
@@ -215,8 +202,8 @@ class GPTNeoXAttention(nn.Module):
             query = torch.cat([q_rot, q_pass], dim=-1)
         else:
             sincos = fixed_pos_embedding(key, 1, seq_len=seq_len)
-            key = apply_rotary_pos_emb(key, sincos, offset=offset)
-            query = apply_rotary_pos_emb(query, sincos, offset=offset)
+            #key = apply_rotary_pos_emb(key, sincos, offset=offset)
+            #query = apply_rotary_pos_emb(query, sincos, offset=offset)
 
         key = key.permute(0, 2, 1, 3)
         query = query.permute(0, 2, 1, 3)
