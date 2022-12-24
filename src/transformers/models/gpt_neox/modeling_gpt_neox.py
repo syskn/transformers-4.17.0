@@ -202,8 +202,8 @@ class GPTNeoXAttention(nn.Module):
             query = torch.cat([q_rot, q_pass], dim=-1)
         else:
             sincos = fixed_pos_embedding(key, 1, seq_len=seq_len)
-            key = apply_rotary_pos_emb(key, sincos, offset=offset)
-            query = apply_rotary_pos_emb(query, sincos, offset=offset)
+            key = apply_rotary_pos_emb(key.to('cpu'), sincos, offset=offset)
+            query = apply_rotary_pos_emb(query.to('cpu'), sincos, offset=offset)
 
         key = key.permute(0, 2, 1, 3)
         query = query.permute(0, 2, 1, 3)
