@@ -131,8 +131,7 @@ class GPTNeoXAttention(nn.Module):
         query = query.to(torch.float16)
         key = key.to(torch.float16)
 
-        key = key.permute(0, 2, 1, 3)
-        query = query.permute(0, 2, 1, 3)
+        value = value.permute(0, 2, 1, 3)
 
         y = xops.memory_efficient_attention(query, key, value, attn_bias=xops.LowerTriangularMask(), scale=self.scale_attn)
         return y, None
