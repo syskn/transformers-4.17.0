@@ -133,7 +133,6 @@ class GPTNeoXAttention(nn.Module):
 
         key = key.transpose(1, 2)
         query = query.transpose(1, 2)
-        value = query.transpose(1, 2)
 
         y = xops.memory_efficient_attention(query, key, value, attn_bias=xops.LowerTriangularMask(), scale=self.scale_attn)
         return y, None
