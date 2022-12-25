@@ -133,8 +133,9 @@ class GPTNeoXAttention(nn.Module):
 
         key = key.permute(0, 2, 1, 3)
         query = query.permute(0, 2, 1, 3)
+        value = query.permute(0, 2, 1, 3)
 
-        y = xops.memory_efficient_attention(query, key, value, attn_bias=xops.LowerTriangularMask(), scale=self.scale_attn)
+        y = xops.memory_efficient_attention(query, key, value, attn_bias=attention_mask, scale=self.scale_attn)
         return y, None
 
         query_length, key_length = query.size(-2), key.size(-2)
