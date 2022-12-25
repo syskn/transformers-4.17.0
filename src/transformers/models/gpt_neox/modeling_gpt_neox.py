@@ -223,7 +223,7 @@ class GPTNeoXAttention(nn.Module):
             value = torch.cat((past_value, value), dim=-2)
 
         if use_cache is True:
-            present = (key, value)
+            present = (key.permute(0, 2, 1, 3), value.permute(0, 2, 1, 3))
         else:
             present = None
 
