@@ -129,6 +129,9 @@ class GPTNeoXAttention(nn.Module):
     ):
 
         # compute causal mask from causal mask buffer
+        query = query.to(torch.float32)
+        key = key.to(torch.float32)
+
         key = key.permute(0, 2, 1, 3)
         query = query.permute(0, 2, 1, 3)
 
