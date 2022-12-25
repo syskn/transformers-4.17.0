@@ -231,8 +231,7 @@ class GPTNeoXAttention(nn.Module):
 
         # compute self-attention: V x Softmax(QK^T)
         attn_output, attn_weights = self._attn(query, key, value, attention_mask, head_mask)
-        key = key.permute(0, 2, 1, 3)
-        query = query.permute(0, 2, 1, 3)
+        attn_output = attn_output.permute(0, 2, 1, 3)
 
         attn_output = self._merge_heads(attn_output, self.num_attention_heads, self.head_dim)
         attn_output = self.out_proj(attn_output)
