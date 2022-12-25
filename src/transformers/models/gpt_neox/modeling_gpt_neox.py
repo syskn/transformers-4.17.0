@@ -33,6 +33,7 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.utils import logging
 from transformers.utils.model_parallel_utils import assert_device_map, get_device_map
 from .configuration_gpt_neox import GPTNeoXConfig
+import xformers.ops as xops
 
 
 logger = logging.get_logger(__name__)
@@ -128,6 +129,14 @@ class GPTNeoXAttention(nn.Module):
     ):
 
         # compute causal mask from causal mask buffer
+        query = query.to(torch.float16)
+        key = key.to(torch.float16)
+
+        value = value.transpose(1, 2)
+
+        y = xops.memory_efficient_attention(query, key, value, attn_bias=xops.LowerTriangularMask(), scale=self.scale_attn)
+        return y, None
+
         query_length, key_length = query.size(-2), key.size(-2)
         causal_mask = self.bias[:, :, key_length - query_length : key_length, :key_length].bool()
 
@@ -221,6 +230,7 @@ class GPTNeoXAttention(nn.Module):
 
         # compute self-attention: V x Softmax(QK^T)
         attn_output, attn_weights = self._attn(query, key, value, attention_mask, head_mask)
+        attn_output = attn_output.transpose(1, 2)
 
         attn_output = self._merge_heads(attn_output, self.num_attention_heads, self.head_dim)
         attn_output = self.out_proj(attn_output)
