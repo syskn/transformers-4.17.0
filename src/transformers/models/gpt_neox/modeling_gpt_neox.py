@@ -130,6 +130,8 @@ class GPTNeoXAttention(nn.Module):
         # compute causal mask from causal mask buffer
         key = key.transpose(1, 2)
         query = query.transpose(1, 2)
+        if key.size(1) != value.size(1):
+            value = value.transpose(1, 2)
         value = value.to(torch.float32)
 
         y = xops.memory_efficient_attention(query, key, value, p=0.0, attn_bias=xops.LowerTriangularMask(), scale=self.scale_attn).to(torch.float16)
